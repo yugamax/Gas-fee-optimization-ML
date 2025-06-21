@@ -19,17 +19,22 @@ df["fee_class"] = pd.qcut(df["base_fee"], q=3, labels=[0, 1, 2]).astype(int)
 
 print(df.head())
 
-X = df.drop(columns=["base_fee", "fee_class"])
+x = df.drop(columns=["base_fee", "fee_class"])
 y = df["fee_class"]
 
+over = RandomOverSampler()
+x,y = over.fit_resample(x,y)
+
 scaler = MinMaxScaler()
-x_scaled = scaler.fit_transform(X)
+x_scaled = scaler.fit_transform(x)
 
 x_train, x_test, y_train, y_test = train_test_split(x_scaled, y, test_size=0.2, random_state=42)
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, activation="relu", input_shape=(x_train.shape[1],)),
+    tf.keras.layers.Dense(128, activation="relu", input_shape=(x_train.shape[1],)),
+    tf.keras.layers.Dense(64, activation="relu"),
     tf.keras.layers.Dense(32, activation="relu"),
+    tf.keras.layers.Dense(16, activation="relu"),
     tf.keras.layers.Dense(3, activation="softmax")
 ])
 
