@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 
-df = pd.read_csv(r"main.eth.csv", on_bad_lines="skip")
+df = pd.read_csv(r"dataset\main.eth.csv", on_bad_lines="skip")
 
 df["time"] = pd.to_datetime(df["time"])
 df["hour"] = df["time"].dt.hour
@@ -57,7 +57,7 @@ lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-6)
 model.compile(optimizer=Adam(learning_rate=0.0001), loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 model.fit(x_train, y_train, epochs=60, batch_size=16, validation_split=0.20, callbacks=[es, lr, bestmod])
 
-model.save("gasfee.keras")
+model.save("model\gasfee.keras")
 print("Model is saved")
 
 yp = model.predict(x_test)
