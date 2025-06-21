@@ -9,6 +9,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from imblearn.over_sampling import RandomOverSampler
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 
 df = pd.read_csv(r"main.eth.csv", on_bad_lines="skip")
@@ -31,7 +32,7 @@ for i in newcol:
 
 x = df.drop(columns=["base_fee", "fee_class"])
 y = df["fee_class"]
-print(df.tail())
+# print(df.tail())
 over = RandomOverSampler()
 x, y = over.fit_resample(x, y)
 
@@ -59,26 +60,28 @@ model.fit(x_train, y_train, epochs=60, batch_size=16, validation_split=0.20, cal
 model.save("gasfee.keras")
 print("Model is saved")
 
-loss, acc = model.evaluate(x_test, y_test)
-print(f"\nTest Accuracy: {acc:.4f}")
-
 yp = model.predict(x_test)
 yp_class = np.argmax(yp, axis=1)
 acc = accuracy_score(y_test, yp_class)
-print(f"Model accuracy : {acc:.2f}")
+print(f"Model accuracy : {(acc*100):.2f} %")
 
-sample = x_test[[0]]
-pred = model.predict(sample)
-pred_class = np.argmax(pred)
-print("Predicted Class:", ["Low", "Mid", "High"][pred_class])
+confidences = np.max(yp, axis=1)
+print(f"Average confidence: {(np.mean(confidences)*100):.2f} %")
 
-cm = confusion_matrix(y_test, yp_class)
-plt.figure(figsize=(6, 4))
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
-            xticklabels=["Low", "Mid", "High"],
-            yticklabels=["Low", "Mid", "High"])
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.title("Confusion Matrix")
-plt.tight_layout()
-plt.show()
+print(classification_report(y_test, yp_class, target_names=["Low", "Mid", "High"]))
+
+# sample = x_test[[0]]
+# pred = model.predict(sample)
+# pred_class = np.argmax(pred)
+# print("Predicted Class:", ["Low", "Mid", "High"][pred_class])
+
+# cm = confusion_matrix(y_test, yp_class)
+# plt.figure(figsize=(6, 4))
+# sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+#             xticklabels=["Low", "Mid", "High"],
+#             yticklabels=["Low", "Mid", "High"])
+# plt.xlabel("Predicted")
+# plt.ylabel("Actual")
+# plt.title("Confusion Matrix")
+# plt.tight_layout()
+# plt.show()
