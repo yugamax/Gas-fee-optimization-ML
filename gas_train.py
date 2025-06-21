@@ -5,6 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau,ModelCheckpoint
+from imblearn.over_sampling import RandomOverSampler
 
 df = pd.read_csv(r"main.eth.csv", on_bad_lines="skip")
 
@@ -38,7 +39,7 @@ lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-6)
 
 model.compile(optimizer=Adam(learning_rate=0.0001), loss="sparse_categorical_crossentropy", metrics=["accuracy"])
 
-model.fit(x_train, y_train, epochs=90, batch_size=16, validation_split=0.1, callbacks=[es , lr , bestmod])
+model.fit(x_train, y_train, epochs=150, batch_size=16, validation_split=0.1, callbacks=[es , lr , bestmod])
 model.save("gasfee.keras")
 print("Model is saved")
 loss, acc = model.evaluate(x_test, y_test)
