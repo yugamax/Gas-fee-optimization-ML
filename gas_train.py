@@ -11,13 +11,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+import joblib
 
 df = pd.read_csv(r"dataset\main.eth.csv", on_bad_lines="skip")
 
 df["time"] = pd.to_datetime(df["time"])
 df["hour"] = df["time"].dt.hour
 
-df = df.drop(columns=["name", "hash", "latest_url", "previous_hash", "previous_url", "last_fork_hash", "time"])
+df = df.drop(columns=["name", "height", "last_fork_height", "hash", "latest_url", "previous_hash", "previous_url", "last_fork_hash", "time"])
 
 df["fee_class"] = pd.cut(df["base_fee"],bins=[-np.inf, 30e9, 60e9, np.inf],labels=[0, 1, 2]).astype(int)
 
@@ -38,6 +39,8 @@ x, y = over.fit_resample(x, y)
 
 scaler = MinMaxScaler()
 x_scaled = scaler.fit_transform(x)
+print("Features:", list(x.columns))
+joblib.dump(scaler,r"model\scaler.joblib")
 
 x_train, x_test, y_train, y_test = train_test_split(
     x_scaled, y, test_size=0.20, random_state=42, stratify=y
