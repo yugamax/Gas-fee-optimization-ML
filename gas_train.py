@@ -18,16 +18,20 @@ df["hour"] = df["time"].dt.hour
 
 df = df.drop(columns=["name", "hash", "latest_url", "previous_hash", "previous_url", "last_fork_hash", "time"])
 
-df["fee_class"] = pd.cut(df["base_fee"],
-    bins=[-np.inf, 30e9, 60e9, np.inf],
-    labels=[0, 1, 2]).astype(int)
+df["fee_class"] = pd.cut(df["base_fee"],bins=[-np.inf, 30e9, 60e9, np.inf],labels=[0, 1, 2]).astype(int)
 
 # print(df["fee_class"].value_counts())
 
+newcol = ["high_gas_price", "medium_gas_price", "low_gas_price",
+    "high_priority_fee", "medium_priority_fee", "low_priority_fee",
+    "base_fee"]
+
+for i in newcol:
+    df[i] = df[i] / 1e9
 
 x = df.drop(columns=["base_fee", "fee_class"])
 y = df["fee_class"]
-
+print(df.tail())
 over = RandomOverSampler()
 x, y = over.fit_resample(x, y)
 
