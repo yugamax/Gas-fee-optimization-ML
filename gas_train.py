@@ -39,7 +39,7 @@ x, y = over.fit_resample(x, y)
 
 scaler = MinMaxScaler()
 x_scaled = scaler.fit_transform(x)
-print("Features:", list(x.columns))
+# print("Features:", list(x.columns))
 joblib.dump(scaler,r"model\scaler.joblib")
 
 x_train, x_test, y_train, y_test = train_test_split(
