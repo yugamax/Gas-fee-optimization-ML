@@ -23,3 +23,7 @@ for col in string_cols:
     df[col] = le.fit_transform(df[col].astype(str))
 
 df.to_csv("cleaned_main.eth.csv", index=False)
+print(df.dtypes)
+
+no_var = (df.drop(columns=['hash']).var(numeric_only=True) == 0)
+print(df.drop(columns=['hash']).var(numeric_only=True)[no_var])
